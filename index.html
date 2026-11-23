@@ -1,0 +1,226 @@
+
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Calculator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Chakra+Petch|Poppins|Lobster+Two">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="icon" type="image/x-icon" href="cal.jpg">
+
+    <style>
+        body {
+            font-family: Chakra Petch;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+
+        h2 {
+            font-family: Poppins;
+            text-shadow: 3px 3px 5px;
+        }
+
+        .calculator-card {
+            width: 100%;
+            margin: 10px auto;
+            max-width: 400px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        #result {
+            width: 100%;
+            height: 50px;
+            font-size: 24px;
+            text-align: right;
+            margin-bottom: 15px;
+            padding: 10px;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+        }
+
+        .w3-button {
+            padding: 15px 0;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .btn-sci {
+            background-color: #e0e0e0;
+            color: #333;
+        }
+
+        .btn-op {
+            background-color: #ff9800;
+            color: white;
+        }
+
+        .btn-num {
+            background-color: #fff;
+            color: #333;
+            border: 1px solid #ccc;
+        }
+
+        .btn-eq {
+            background-color: #2196F3;
+            color: white;
+            grid-column: span 2;
+        }
+
+        footer {
+            font-family: Lobster Two;
+            border: 1px solid gainsboro;
+            border-radius: 10px;
+            padding: 10px;
+            margin-top: 30px;
+        }
+    </style>
+
+    <script>
+        function cal2show(key) {
+            let old_result = document.getElementById("result").value;
+            let new_result = "" + old_result + key;
+            document.getElementById("result").value = new_result;
+        }
+
+        function clearScreen() {
+            document.getElementById("result").value = "";
+        }
+
+        function deleteLast() {
+            let current = document.getElementById("result").value;
+            document.getElementById("result").value = current.substring(0, current.length - 1);
+        }
+
+        function compute() {
+            let exp = document.getElementById("result").value;
+
+            let parsedExp = exp.replace(/sin\(/g, 'Math.sin(')
+                .replace(/cos\(/g, 'Math.cos(')
+                .replace(/tan\(/g, 'Math.tan(')
+                .replace(/sqrt\(/g, 'Math.sqrt(')
+                .replace(/log\(/g, 'Math.log10(')
+                .replace(/ln\(/g, 'Math.log(')
+                .replace(/pi/g, 'Math.PI')
+                .replace(/e/g, 'Math.E')
+                .replace(/\^/g, '**');
+
+            try {
+                let rs = eval(parsedExp);
+                document.getElementById("result").value = rs;
+            }
+            catch {
+                alert("รูปแบบสมการไม่ถูกต้อง");
+            }
+        }
+
+        // เพิ่มการรองรับการใช้งานผ่านแป้นพิมพ์
+        document.addEventListener("keydown", function(event) {
+
+            let key = event.key;
+
+            // ป้องกันการทำงานซ้ำเมื่อกำลังพิมพ์ในช่องแสดงผล
+            if (document.activeElement.id === "result") {
+
+                if (key === "Enter") {
+                    event.preventDefault();
+                    compute();
+                }
+
+                if (key === "Escape") {
+                    clearScreen();
+                }
+
+                return;
+            }
+
+            // ตัวเลขและเครื่องหมายคำนวณ
+            if ("0123456789+-*/.()^".includes(key)) {
+                cal2show(key);
+            }
+
+            // กด Enter เพื่อคำนวณ
+            if (key === "Enter") {
+                event.preventDefault();
+                compute();
+            }
+
+            // กด Backspace เพื่อลบ
+            if (key === "Backspace") {
+                event.preventDefault();
+                deleteLast();
+            }
+
+            // กด Escape เพื่อล้างหน้าจอ
+            if (key === "Escape") {
+                clearScreen();
+            }
+        });
+    </script>
+</head>
+
+<body>
+    <div class="calculator-card w3-card-4">
+        <h2 class="w3-center w3-margin-bottom">🔢Calculator</h2>
+
+        <input type="text" name="result" id="result" class="w3-input w3-border w3-round" placeholder="0"
+            onkeydown="if(event.key==='Enter') compute()">
+
+        <div class="grid-container">
+
+            <button type="button" onclick="cal2show('sin(')" class="w3-button w3-round-large btn-sci">sin</button>
+            <button type="button" onclick="cal2show('cos(')" class="w3-button w3-round-large btn-sci">cos</button>
+            <button type="button" onclick="cal2show('tan(')" class="w3-button w3-round-large btn-sci">tan</button>
+            <button type="button" onclick="clearScreen()" class="w3-button w3-round-large w3-red">C</button>
+
+            <button type="button" onclick="cal2show('log(')" class="w3-button w3-round-large btn-sci">log</button>
+            <button type="button" onclick="cal2show('sqrt(')" class="w3-button w3-round-large btn-sci">√</button>
+            <button type="button" onclick="cal2show('^')" class="w3-button w3-round-large btn-sci">x^y</button>
+            <button type="button" onclick="deleteLast()" class="w3-button w3-round-large w3-deep-orange">DEL</button>
+
+            <button type="button" onclick="cal2show('(')" class="w3-button w3-round-large btn-sci">(</button>
+            <button type="button" onclick="cal2show(')')" class="w3-button w3-round-large btn-sci">)</button>
+            <button type="button" onclick="cal2show('pi')" class="w3-button w3-round-large btn-sci">π</button>
+            <button type="button" onclick="cal2show('/')" class="w3-button w3-round-large btn-op">÷</button>
+
+            <button type="button" onclick="cal2show('7')" class="w3-button w3-round-large btn-num">7</button>
+            <button type="button" onclick="cal2show('8')" class="w3-button w3-round-large btn-num">8</button>
+            <button type="button" onclick="cal2show('9')" class="w3-button w3-round-large btn-num">9</button>
+            <button type="button" onclick="cal2show('*')" class="w3-button w3-round-large btn-op">×</button>
+
+            <button type="button" onclick="cal2show('4')" class="w3-button w3-round-large btn-num">4</button>
+            <button type="button" onclick="cal2show('5')" class="w3-button w3-round-large btn-num">5</button>
+            <button type="button" onclick="cal2show('6')" class="w3-button w3-round-large btn-num">6</button>
+            <button type="button" onclick="cal2show('-')" class="w3-button w3-round-large btn-op">−</button>
+
+            <button type="button" onclick="cal2show('1')" class="w3-button w3-round-large btn-num">1</button>
+            <button type="button" onclick="cal2show('2')" class="w3-button w3-round-large btn-num">2</button>
+            <button type="button" onclick="cal2show('3')" class="w3-button w3-round-large btn-num">3</button>
+            <button type="button" onclick="cal2show('+')" class="w3-button w3-round-large btn-op">+</button>
+
+            <button type="button" onclick="cal2show('0')" class="w3-button w3-round-large btn-num">0</button>
+            <button type="button" onclick="cal2show('.')" class="w3-button w3-round-large btn-num">.</button>
+            <button type="button" onclick="compute()" class="w3-button w3-round-large btn-eq">=</button>
+
+        </div>
+    </div>
+</body>
+
+<footer>
+    <center>
+        Copyright &copy; 2026 by 6720310006 NIFATIROH HASA
+        <br>and 6720310011 NUINEE SAEMASAE
+        <br>and 6720310276 MURNEE JINTARA
+    </center>
+</footer>
+
+</html>
+```
